@@ -1,0 +1,44 @@
+version: '2'
+services:
+  tomcat1: 
+    environment:
+      - JAVA_OPTS=-Dspring.profiles.active=docker -Dfile.encoding=euc-kr
+    build:
+      context: .
+      args:
+        conf: tomcat1/conf
+      dockerfile: ./DockerfileTomcat
+    volumes:
+      - './tomcat1/logs/:/usr/local/tomcat/logs/'
+    ports:
+      - "8001:8080"
+    restart: on-failure
+  tomcat2:
+    build:
+      context: .
+      args:
+        conf: tomcat2/conf
+      dockerfile: ./DockerfileTomcat
+    volumes:
+      - './tomcat2/logs/:/usr/local/tomcat/logs/'
+    ports:
+      - "8002:8080"
+    restart: on-failure
+  nginx:
+    build:
+      context: .
+      dockerfile: ./DockerfileNginx
+      args:
+        conf: nginx/conf
+    ports:
+      - '9999:8080'
+    tty: true
+    restart: on-failure
+  redis-session-store:
+    image: 10.75.129.110:12050/redis:6.0
+    ports: 
+      - "6379:6379"
+    restart: on-failure
+    links:
+      - tomcat1
+      - tomcat2
