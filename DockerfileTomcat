@@ -1,0 +1,25 @@
+FROM 10.75.129.110:12050/tomcat:8.5.53-jdk8-openjdk
+
+ENV REDIS_HOST redis
+ENV REDIS_PORT 6379
+
+ARG conf
+
+
+WORKDIR /usr/local/tomcat
+
+RUN mv webapps webapps2 &&  mv webapps.dist/ webapps && rm -rf webapps2
+
+ADD /redis/* /usr/local/tomcat/lib/ 
+
+ADD config.yml /usr/local/tomcat/    
+
+ADD /manager/context.xml /usr/local/tomcat/webapps/manager/META-INF/context.xml
+
+ADD /host-manager/context.xml /usr/local/tomcat/webapps/host-manager/META-INF/context.xml
+
+COPY $conf/* /usr/local/tomcat/conf/
+COPY /app/StickySession.war /usr/local/tomcat/webapps/StickySession.war
+COPY /app/NLQ.war /usr/local/tomcat/webapps/NLQ.war
+
+CMD ["catalina.sh", "run"]
