@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: marketplace-vol
+spec:
+  containers:
+  - image: 10.75.129.110:12050/tomcat:8.5.53-jdk8-openjdk
+    name: tomcat
+    command: ["catalina.sh", "run"]
+    volumeMounts:
+    - mountPath: /usr/local/tomcat/webapps
+      name: pv-volume1
+      subPath: app
+    - mountPath: /usr/local/tomcat/logs
+      name: pv-volume1
+      subPath: logs
+      readOnly: false
+    ports:
+    - containerPort: 8080
+      hostPort: 8001
+  volumes:
+  - name: pv-volume1
+    persistentVolumeClaim:
+      claimName: tomcat-pv-claim
