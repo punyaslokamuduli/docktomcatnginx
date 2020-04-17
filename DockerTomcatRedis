@@ -1,0 +1,21 @@
+Form <>
+ENV REDIS_HOST redis
+ENV REDIS_PORT 6379
+
+WORKDIR /usr/local/tomcat
+
+RUN mv webapps webapps2 &&  mv webapps.dist/ webapps && rm -rf webapps2
+
+ADD /redis/* /usr/local/tomcat/lib/
+
+ADD config.yml /usr/local/tomcat/
+
+ADD /manager/context.xml /usr/local/tomcat/webapps/manager/META-INF/context.xml
+
+ADD /host-manager/context.xml /usr/local/tomcat/webapps/host-manager/META-INF/context.xml
+
+COPY ./tomcat1/conf/context.xml /usr/local/tomcat/conf/context.xml
+COPY ./tomcat1/conf/server.xml /usr/local/tomcat/conf/server.xml
+COPY ./tomcat1/conf/tomcat-users.xml /usr/local/tomcat/conf/tomcat-users.xml
+
+CMD ["catalina.sh", "run"]
